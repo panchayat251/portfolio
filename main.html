@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        canvas {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const box = 20;
+        let snake = [{ x: 200, y: 200 }];
+        let food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+        let dx = box;
+        let dy = 0;
+        let score = 0;
+
+        document.addEventListener("keydown", changeDirection);
+
+        function changeDirection(event) {
+            const keyPressed = event.key;
+            if (keyPressed === "ArrowUp" && dy === 0) {
+                dx = 0;
+                dy = -box;
+            } else if (keyPressed === "ArrowDown" && dy === 0) {
+                dx = 0;
+                dy = box;
+            } else if (keyPressed === "ArrowLeft" && dx === 0) {
+                dx = -box;
+                dy = 0;
+            } else if (keyPressed === "ArrowRight" && dx === 0) {
+                dx = box;
+                dy = 0;
+            }
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            ctx.fillStyle = "lime";
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, box, box));
+
+            let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+            } else {
+                snake.pop();
+            }
+
+            if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                alert("Game Over! Score: " + score);
+                document.location.reload();
+            }
+
+            snake.unshift(head);
+        }
+
+        setInterval(drawGame, 100);
+    </script>
+</body>
+</html>
